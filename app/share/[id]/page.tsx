@@ -5,6 +5,19 @@ import { Share2, MessageCircle } from "lucide-react"
 
 // @ts-ignore
 export default async function SharePage({ params }: { params: { id: string } }) {
+    if (!prisma) {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4 text-center">
+                <div className="max-w-md">
+                    <h1 className="text-2xl font-bold mb-2">Database not configured</h1>
+                    <p className="text-muted-foreground">
+                        This deployment is missing <code className="font-mono">DATABASE_URL</code>. Configure it in the environment and redeploy.
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
     const message = await prisma.message.findUnique({
         where: { id: params.id },
         include: { replyImage: true }

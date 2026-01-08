@@ -36,6 +36,8 @@ export type FormState = {
 }
 
 export async function registerUser(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
+    if (!prisma) return { error: "Database is not configured" }
+
     const rawData = {
         username: formData.get('username'),
         email: formData.get('email'),
@@ -65,6 +67,8 @@ export async function registerUser(_prevState: FormState | undefined, formData: 
 }
 
 export async function sendMessage(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
+    if (!prisma) return { error: "Database is not configured" }
+
     const rawData = {
         content: formData.get('content'),
         username: formData.get('username'),
@@ -108,6 +112,8 @@ export async function deleteMessage(messageId: string) {
     const session = await getServerSession(authOptions)
     if (!session?.user) return { error: "Unauthorized" }
 
+    if (!prisma) return { error: "Database is not configured" }
+
     try {
         const message = await prisma.message.findUnique({ where: { id: messageId } })
         if (!message) return { error: "Not found" }
@@ -122,6 +128,8 @@ export async function deleteMessage(messageId: string) {
 }
 
 export async function saveReply(_prevState: FormState | undefined, formData: FormData): Promise<FormState> {
+    if (!prisma) return { error: "Database is not configured" }
+
     const rawData = {
         messageId: formData.get('messageId'),
         reply: formData.get('reply'),

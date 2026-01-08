@@ -14,6 +14,22 @@ export default async function DashboardPage() {
         redirect("/sign-in")
     }
 
+    if (!prisma) {
+        return (
+            <div className="min-h-screen bg-background">
+                <DashboardHeader user={session.user} />
+                <main className="container mx-auto px-4 py-8 max-w-6xl">
+                    <div className="p-6 rounded-xl border bg-muted/20">
+                        <h1 className="text-xl font-semibold mb-2">Database not configured</h1>
+                        <p className="text-sm text-muted-foreground">
+                            Set <code className="font-mono">DATABASE_URL</code> in your environment (and in Vercel) and redeploy.
+                        </p>
+                    </div>
+                </main>
+            </div>
+        )
+    }
+
     const messages = await prisma.message.findMany({
         where: { userId: session.user.id },
         orderBy: { createdAt: 'desc' }

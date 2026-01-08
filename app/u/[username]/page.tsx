@@ -4,6 +4,18 @@ import { MessageForm } from "@/components/public-profile/message-form"
 import Link from "next/link"
 
 export default async function PublicProfilePage({ params }: { params: { username: string } }) {
+    if (!prisma) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center">
+                <h1 className="text-2xl font-bold mb-2">Database not configured</h1>
+                <p className="text-muted-foreground max-w-md">
+                    This deployment is missing <code className="font-mono">DATABASE_URL</code>. Configure it in the environment and redeploy.
+                </p>
+                <Link href="/" className="mt-8 text-primary hover:underline">Go home</Link>
+            </div>
+        )
+    }
+
     const user = await prisma.user.findUnique({
         where: { username: params.username }
     })
