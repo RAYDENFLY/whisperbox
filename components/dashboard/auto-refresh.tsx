@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "react-hot-toast"
 
 type AutoRefreshProps = {
     intervalMs?: number
@@ -11,6 +12,50 @@ type AutoRefreshProps = {
 
 export function AutoRefresh({ intervalMs = 15000, lastMessageAt = null, unrepliedCount }: AutoRefreshProps) {
     const router = useRouter()
+
+    // Ask permission once (user-initiated prompt isn't strictly required for Notifications,
+    // but we keep it lightweight and only ask on dashboard).
+    useEffect(() => {
+        if (typeof window === "undefined") return
+        if (!("Notification" in window)) return
+
+        const asked = window.localStorage.getItem("wb:notificationAsked")
+        if (asked) return
+        window.localStorage.setItem("wb:notificationAsked", "1")
+
+        // Only ask if still default.
+        if (Notification.permission === "default") {
+            toast(
+                (t) => (
+                    <div className="flex items-center gap-3">
+                        <div className="text-sm">
+                            Aktifkan notifikasi saat ada pesan masuk?
+                        </div>
+                        <button
+                            className="px-3 py-1 rounded-md bg-primary text-primary-foreground text-sm"
+                            onClick={async () => {
+                                try {
+                                    await Notification.requestPermission()
+                                } catch {
+                                    // ignore
+                                }
+                                toast.dismiss(t.id)
+                            }}
+                        >
+                            Aktifkan
+                        </button>
+                        <button
+                            className="px-3 py-1 rounded-md bg-secondary text-secondary-foreground text-sm"
+                            onClick={() => toast.dismiss(t.id)}
+                        >
+                            Nanti
+                        </button>
+                    </div>
+                ),
+                { duration: 15000 }
+            )
+        }
+    }, [])
 
     // Detect new messages and show a browser notification (if permitted).
     useEffect(() => {
