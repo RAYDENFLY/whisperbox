@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { MessageCard } from "@/components/dashboard/message-card"
-import { Button } from "@/components/ui/button"
+import { ShareLinkBox } from "@/components/dashboard/share-link-box"
 import { Message } from "@prisma/client"
 
 export default async function DashboardPage() {
@@ -46,17 +46,7 @@ export default async function DashboardPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Your Inbox</h1>
                 </div>
 
-                <div className="mb-10 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-                    <h2 className="text-lg font-semibold mb-2">Get more messages</h2>
-                    <p className="text-sm text-muted-foreground mb-4">Share your unique link with your audience.</p>
-                    <div className="flex items-center gap-2 max-w-md bg-background p-1.5 rounded-lg border">
-                        <code className="flex-1 px-2 text-sm font-mono truncate">
-                            {shareLink}
-                        </code>
-                        <Button size="sm" className="shrink-0" variant="secondary">Copy</Button>
-                        {/* Note: Copy button needs client component, skipped for simplicity or can be Hydrated */}
-                    </div>
-                </div>
+                <ShareLinkBox shareLink={shareLink} username={session.user.username} />
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {messages.length === 0 ? (

@@ -96,7 +96,7 @@ export function ReplyModal({ message, onClose }: { message: any, onClose: () => 
                         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-zinc-900 text-center">
                             <p className="text-[10px] text-muted-foreground font-medium">
                                 send me anonymous messages at <br />
-                                <span className="text-indigo-600 dark:text-indigo-400">whisperbox.vercel.app</span>
+                                <span className="text-indigo-600 dark:text-indigo-400">whisperbox-livid.vercel.app/</span>
                             </p>
                         </div>
                     </div>
