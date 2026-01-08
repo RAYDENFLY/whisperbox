@@ -27,7 +27,8 @@ const MessageSchema = z.object({
 const ReplySchema = z.object({
     messageId: z.string(),
     reply: z.string().min(1, "Reply cannot be empty").max(500, "Reply too long"),
-    replyImage: z.string().optional() // Base64 string
+    // FormData.get() returns `FormDataEntryValue | null`, so accept null as "no image".
+    replyImage: z.union([z.string(), z.null()]).optional() // Base64 string
 })
 
 export type FormState = {
@@ -150,16 +151,17 @@ export async function saveReply(_prevState: FormState | undefined, formData: For
         if (!message) return { error: "Message not found" }
         if (message.userId !== session.user.id) return { error: "Unauthorized" }
 
-        const { replyImage, ...rest } = validated.data;
+    const { replyImage, ...rest } = validated.data;
+    const replyImageString = typeof replyImage === "string" ? replyImage : undefined
 
         await prisma.message.update({
             where: { id: messageId },
             data: {
                 reply: rest.reply,
                 repliedAt: new Date(),
-                replyImage: replyImage ? {
+        replyImage: replyImageString ? {
                     create: {
-                        data: replyImage
+            data: replyImageString
                     }
                 } : undefined
             }

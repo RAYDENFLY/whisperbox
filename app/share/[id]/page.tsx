@@ -70,7 +70,7 @@ export default async function SharePage({ params }: { params: { id: string } }) 
                                 </div>
                                 <span className="text-xs font-bold text-muted-foreground uppercase">{senderDisplay}</span>
                             </div>
-                            <p className="text-sm font-medium leading-relaxed">
+                            <p className="text-sm text-white font-medium leading-relaxed">
                                 {content}
                             </p>
                         </div>
