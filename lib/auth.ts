@@ -11,7 +11,8 @@ export const authOptions: NextAuthOptions = {
     },
     pages: {
         signIn: "/sign-in",
-        signUp: "/sign-up",
+    // NextAuth v4 doesn't support `signUp`; use your own link to /sign-up
+    // or redirect new users via `newUser` if needed.
     },
     providers: [
         CredentialsProvider({
