@@ -5,6 +5,8 @@ import { redirect } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { MessageCard } from "@/components/dashboard/message-card"
 import { ShareLinkBox } from "@/components/dashboard/share-link-box"
+import { AutoRefresh } from "@/components/dashboard/auto-refresh"
+import { NotificationPermission } from "@/components/dashboard/notification-permission"
 import { Message } from "@prisma/client"
 
 export default async function DashboardPage() {
@@ -35,13 +37,30 @@ export default async function DashboardPage() {
         orderBy: { createdAt: 'desc' }
     })
 
+    const unrepliedCount = await prisma.message.count({
+        where: {
+            userId: session.user.id,
+            reply: null,
+        },
+    })
+
+    const latestMessage = await prisma.message.findFirst({
+        where: { userId: session.user.id },
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+    })
+
+    const latestMessageAt = latestMessage?.createdAt?.toISOString() ?? null
+
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
     const shareLink = `${baseUrl}/u/${session.user.username}`
 
     return (
         <div className="min-h-screen bg-background">
+            <AutoRefresh intervalMs={15000} lastMessageAt={latestMessageAt} unrepliedCount={unrepliedCount} />
             <DashboardHeader user={session.user} />
             <main className="container mx-auto px-4 py-8 max-w-6xl">
+                <NotificationPermission />
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <h1 className="text-3xl font-bold tracking-tight">Your Inbox</h1>
                 </div>

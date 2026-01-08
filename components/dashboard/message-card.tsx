@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 export function MessageCard({ message }: { message: any }) {
     const [isDeleting, setIsDeleting] = useState(false)
     const [isReplying, setIsReplying] = useState(false)
+    const [dismissedUnread, setDismissedUnread] = useState(false)
     const router = useRouter()
 
     async function handleDelete() {
@@ -32,10 +33,22 @@ export function MessageCard({ message }: { message: any }) {
             ? `Initials: ${message.senderName}`
             : `Alias: ${message.senderName}`
 
+    const isUnreplied = !message.reply && !message.repliedAt
+    const showGreenDot = isUnreplied && !dismissedUnread
+
     return (
         <Card className="flex flex-col h-full transition-all hover:shadow-md">
             <CardHeader className="text-xs text-muted-foreground flex flex-row justify-between items-center space-y-0 pb-2">
-                <span className="font-medium">{senderDisplay}</span>
+                <span className="font-medium flex items-center gap-2">
+                    {showGreenDot && (
+                        <span
+                            className="h-2.5 w-2.5 rounded-full bg-emerald-500"
+                            title="Belum dibalas"
+                            aria-label="Belum dibalas"
+                        />
+                    )}
+                    {senderDisplay}
+                </span>
                 <span>{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}</span>
             </CardHeader>
             <CardContent className="pt-4 flex-grow">
@@ -45,7 +58,10 @@ export function MessageCard({ message }: { message: any }) {
                 <Button
                     className="flex-1 gap-2"
                     variant="default"
-                    onClick={() => setIsReplying(true)}
+                    onClick={() => {
+                        setDismissedUnread(true)
+                        setIsReplying(true)
+                    }}
                 >
                     <Reply className="h-4 w-4" />
                     Reply & Share
@@ -66,7 +82,9 @@ export function MessageCard({ message }: { message: any }) {
             {isReplying && (
                 <ReplyModal
                     message={message}
-                    onClose={() => setIsReplying(false)}
+                    onClose={() => {
+                        setIsReplying(false)
+                    }}
                 />
             )
             }
